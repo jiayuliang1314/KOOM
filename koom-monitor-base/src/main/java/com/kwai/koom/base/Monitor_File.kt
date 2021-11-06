@@ -27,51 +27,56 @@ import java.util.zip.ZipOutputStream
 /**
  * When compressing, only the last-level file name is retained, and the path is not retained.
  * Files with the same name under different paths will be overwritten
+ * 压缩时只保留最后一级文件名，不保留路径。 不同路径下的同名文件会被覆盖
  */
 const val ZIP_LAST_PATH_NAME = -1
 
 /**
  * Keep original directory structure when compressing
+ * 压缩时保持原始目录结构
  */
 const val ZIP_FULL_PATH_NAME = 0
 
 fun File.zipTo(zipFile: File, zipType: Int = ZIP_LAST_PATH_NAME) {
-  if (isFile) {
-    arrayListOf(this).zipTo(zipFile.absolutePath, zipType)
-  } else if (isDirectory) {
-    arrayListOf<File>().apply { buildSrcFileList(this) }
-        .zipTo(zipFile.absolutePath, zipType)
-  }
+    if (isFile) {
+        arrayListOf(this).zipTo(zipFile.absolutePath, zipType)
+    } else if (isDirectory) {
+      //导入folder里的文件
+        arrayListOf<File>().apply { buildSrcFileList(this) }
+                .zipTo(zipFile.absolutePath, zipType)
+    }
 }
 
 fun List<File>.zipTo(zipFilePath: String, zipType: Int = ZIP_LAST_PATH_NAME) {
-  ZipOutputStream(FileOutputStream(zipFilePath)).use { out ->
-    for (file in this) {
-      val filePath = file.absolutePath
+    ZipOutputStream(FileOutputStream(zipFilePath)).use { out ->
+        for (file in this) {//this指的是List<File>
+            val filePath = file.absolutePath
 
-      if (zipType == ZIP_LAST_PATH_NAME) {
-        ZipEntry(filePath.substring(filePath.lastIndexOf("/") + 1))
-      } else {
-        ZipEntry(filePath)
-      }.also {
-        out.putNextEntry(it)
-      }
-
-      FileInputStream(file).use { it.copyTo(out) }
+            if (zipType == ZIP_LAST_PATH_NAME) {
+                ZipEntry(filePath.substring(filePath.lastIndexOf("/") + 1))
+            } else {
+                ZipEntry(filePath)
+            }.also {
+              //it知道是ZipEntry
+                out.putNextEntry(it)
+            }
+            //out是ZipOutputStream
+            FileInputStream(file).use { it.copyTo(out) }
+        }
     }
-  }
 }
 
 fun File.readFirstLine(): String? {
-  useLines { return it.firstOrNull() }
+    useLines { return it.firstOrNull() }
 }
 
+//遍历文件夹将文件加入到srcFileList里
 private fun File.buildSrcFileList(srcFileList: MutableList<File>) {
-  for (file in listFiles().orEmpty()) {
-    if (file.isDirectory) {
-      file.buildSrcFileList(srcFileList)
-    } else if (file.isFile) {
-      srcFileList.add(file)
+    for (file in listFiles().orEmpty()) {
+        if (file.isDirectory) {
+            file.buildSrcFileList(srcFileList)
+        } else if (file.isFile) {
+            srcFileList.add(file)
+        }
     }
-  }
 }

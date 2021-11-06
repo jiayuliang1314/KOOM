@@ -18,46 +18,48 @@
  */
 package com.kwai.koom.base
 
+//ok
 abstract class Monitor<C> {
-  private var _commonConfig: CommonConfig? = null
-  protected val commonConfig: CommonConfig
-    get() = _commonConfig!!
+  //一个CommonConfig公共配置
+    private var _commonConfig: CommonConfig? = null
+    protected val commonConfig: CommonConfig
+        get() = _commonConfig!!
+   //一个c，单独配置
+    private var _monitorConfig: C? = null
+    protected val monitorConfig: C
+        get() = _monitorConfig!!
+    //是否初始化了
+    open var isInitialized = false
 
-  private var _monitorConfig: C? = null
-  protected val monitorConfig: C
-    get() = _monitorConfig!!
+    protected inline fun throwIfNotInitialized(
+            onDebug: () -> Unit = {
+              throw RuntimeException("Monitor is not initialized")
+            },
+            onRelease: () -> Unit
+    ) {
+        if (isInitialized) {
+            return
+        }
 
-  open var isInitialized = false
-
-  protected inline fun throwIfNotInitialized(
-      onDebug: () -> Unit = {
-        throw RuntimeException("Monitor is not initialized")
-      },
-      onRelease: () -> Unit
-  ) {
-    if (isInitialized) {
-      return
+        if (MonitorBuildConfig.DEBUG) {
+            onDebug()
+        } else {
+            onRelease()
+        }
     }
 
-    if (MonitorBuildConfig.DEBUG) {
-      onDebug()
-    } else {
-      onRelease()
+    protected fun Boolean.syncToInitialized() = apply {
+        isInitialized = this && isInitialized
     }
-  }
 
-  protected fun Boolean.syncToInitialized() = apply {
-    isInitialized = this && isInitialized
-  }
+    open fun init(commonConfig: CommonConfig, monitorConfig: C) {
+        _commonConfig = commonConfig
+        _monitorConfig = monitorConfig
 
-  open fun init(commonConfig: CommonConfig, monitorConfig: C) {
-    _commonConfig = commonConfig
-    _monitorConfig = monitorConfig
+        isInitialized = true
+    }
 
-    isInitialized = true
-  }
-
-  open fun getLogParams(): Map<String, Any> {
-    return mapOf("${javaClass.simpleName.decapitalize()}ingEnabled" to isInitialized)
-  }
+    open fun getLogParams(): Map<String, Any> {
+        return mapOf("${javaClass.simpleName.decapitalize()}ingEnabled" to isInitialized)
+    }
 }

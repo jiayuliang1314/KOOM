@@ -20,64 +20,74 @@ package com.kwai.koom.base.loop
 
 import android.os.Handler
 import com.kwai.koom.base.Monitor
-import java.util.concurrent.Callable
+import java.util.concurrent.Callable//可调用
 
 abstract class LoopMonitor<C> : Monitor<C>(), Callable<LoopMonitor.LoopState> {
-  companion object {
-    private const val DEFAULT_LOOP_INTERVAL = 1000L
-  }
-
-  @Volatile
-  private var mIsLoopStopped = true
-
-  private val mLoopRunnable = object : Runnable {
-    override fun run() {
-      if (call() == LoopState.Terminate) {
-        return
-      }
-
-      if (mIsLoopStopped) {
-        return
-      }
-
-      getLoopHandler().removeCallbacks(this)
-      getLoopHandler().postDelayed(this, getLoopInterval())
-    }
-  }
-
-  open fun startLoop(
-      clearQueue: Boolean = true,
-      postAtFront: Boolean = false,
-      delayMillis: Long = 0L
-  ) {
-    if (clearQueue) getLoopHandler().removeCallbacks(mLoopRunnable)
-
-    if (postAtFront) {
-      getLoopHandler().postAtFrontOfQueue(mLoopRunnable)
-    } else {
-      getLoopHandler().postDelayed(mLoopRunnable, delayMillis)
+    companion object {
+        private const val DEFAULT_LOOP_INTERVAL = 1000L
     }
 
-    mIsLoopStopped = false
-  }
+    //是否停止了
+    //https://www.jianshu.com/p/3963e64e7fe7
+    //在kotlin中没有volatile关键字，但是有@Volatile注解，
+    @Volatile//@Volatile将把JVM支持字段标记为volatile
+    private var mIsLoopStopped = true
 
-  open fun stopLoop() {
-    mIsLoopStopped = true
+    //单独线程
+    private val mLoopRunnable = object : Runnable {
+        override fun run() {
+            //如果call返回Terminate则停止
+            if (call() == LoopState.Terminate) {
+                return
+            }
 
-    getLoopHandler().removeCallbacks(mLoopRunnable)
-  }
+            if (mIsLoopStopped) {
+                return
+            }
 
-  protected open fun getLoopInterval(): Long {
-    return DEFAULT_LOOP_INTERVAL
-  }
+            getLoopHandler().removeCallbacks(this)
+            getLoopHandler().postDelayed(this, getLoopInterval())
+        }
+    }
 
-  protected open fun getLoopHandler(): Handler {
-    return commonConfig.loopHandlerInvoker()
-  }
+    //开启
+    open fun startLoop(
+            clearQueue: Boolean = true,
+            postAtFront: Boolean = false,
+            delayMillis: Long = 0L
+    ) {
+        if (clearQueue) getLoopHandler().removeCallbacks(mLoopRunnable)
 
-  sealed class LoopState {
-    object Continue : LoopState()
+        if (postAtFront) {
+            getLoopHandler().postAtFrontOfQueue(mLoopRunnable)
+        } else {
+            getLoopHandler().postDelayed(mLoopRunnable, delayMillis)
+        }
 
-    object Terminate : LoopState()
-  }
+        mIsLoopStopped = false
+    }
+
+    //停止
+    open fun stopLoop() {
+        mIsLoopStopped = true
+
+        getLoopHandler().removeCallbacks(mLoopRunnable)
+    }
+
+    //1s中
+    protected open fun getLoopInterval(): Long {
+        return DEFAULT_LOOP_INTERVAL
+    }
+
+    //一个开启消息循环线程的Handler
+    protected open fun getLoopHandler(): Handler {
+        return commonConfig.loopHandlerInvoker()
+    }
+
+    sealed class LoopState {
+        //两个状态Continue
+        object Continue : LoopState()
+        //两个状态Terminate
+        object Terminate : LoopState()
+    }
 }

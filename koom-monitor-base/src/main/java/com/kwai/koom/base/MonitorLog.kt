@@ -18,7 +18,11 @@
  */
 package com.kwai.koom.base
 
+//MonitorLog本地打log
 object MonitorLog {
+  //https://blog.csdn.net/qq_33404903/article/details/89425671
+  // JvmStatic指定如果它是函数，则需要从此元素生成额外的静态方法。
+  // 如果此元素是属性，则应生成额外的静态 getter / setter 方法。
   @JvmStatic
   fun v(tag: String, msg: String): Int {
     return MonitorManager.commonConfig.log.v(tag, msg)

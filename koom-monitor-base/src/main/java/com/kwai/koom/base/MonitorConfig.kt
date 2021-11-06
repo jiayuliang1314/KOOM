@@ -18,6 +18,8 @@
  */
 package com.kwai.koom.base
 
+
+//ok
 abstract class MonitorConfig<M> {
   interface Builder<C: MonitorConfig<*>> {
     fun build(): C

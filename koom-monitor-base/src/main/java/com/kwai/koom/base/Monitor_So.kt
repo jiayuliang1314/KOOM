@@ -26,31 +26,34 @@ private const val TAG = "MonitorSo"
 @Deprecated("Deprecated", ReplaceWith("loadSoQuietly(soName)"))
 fun loadSo(soName: String) = MonitorManager.commonConfig.loadSoInvoker(soName)
 
+//加载so
 fun loadSoQuietly(soName: String): Boolean = runCatching {
-  MonitorManager.commonConfig.loadSoInvoker(soName)
+    MonitorManager.commonConfig.loadSoInvoker(soName)//so
 
-  return@runCatching true
+    return@runCatching true
 }.onFailure {
-  it.printStackTrace()
+    it.printStackTrace()
 
-  MonitorLog.e(TAG, it.message + "\n"+ Log.getStackTraceString(it))
+    MonitorLog.e(TAG, it.message + "\n" + Log.getStackTraceString(it))
 }.getOrElse { false }
 
+//是否支持64
 fun isSupportArm64(): Boolean {
-  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-    return false
-  }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        return false
+    }
 
-  return supportedABIs().contains("arm64-v8a")
+    return supportedABIs().contains("arm64-v8a")
 }
 
+//ok
 private fun supportedABIs(): Array<String> {
-  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-      && Build.SUPPORTED_ABIS.isNotEmpty()) {
-    Build.SUPPORTED_ABIS
-  } else if (!Build.CPU_ABI2.isNullOrEmpty()) {
-    arrayOf(Build.CPU_ABI, Build.CPU_ABI2)
-  } else {
-    arrayOf(Build.CPU_ABI)
-  }
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            && Build.SUPPORTED_ABIS.isNotEmpty()) {
+        Build.SUPPORTED_ABIS
+    } else if (!Build.CPU_ABI2.isNullOrEmpty()) {//todo
+        arrayOf(Build.CPU_ABI, Build.CPU_ABI2)
+    } else {//todo
+        arrayOf(Build.CPU_ABI)
+    }
 }

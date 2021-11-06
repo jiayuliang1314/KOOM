@@ -22,6 +22,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.Process.THREAD_PRIORITY_BACKGROUND
 
+//用object 修饰的类为静态类，里面的方法和变量都为静态的。
 internal object LoopThread : HandlerThread("LoopThread", THREAD_PRIORITY_BACKGROUND) {
   init {
     start()

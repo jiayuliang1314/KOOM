@@ -31,7 +31,7 @@ class CommonConfig private constructor(
     val application: Application,
 
     // Custom FileManager or sharedPreferences
-    val rootFileInvoker: (String) -> File,
+    val rootFileInvoker: (String) -> File,//默认文件夹
     val sharedPreferencesInvoker: (String) -> SharedPreferences,
     val sharedPreferencesKeysInvoker: (SharedPreferences) -> Set<String>,
 
@@ -39,15 +39,15 @@ class CommonConfig private constructor(
     internal val debugMode: Boolean,
     internal val versionNameInvoker: () -> String,
 
-    internal val logger: Logger,
-    internal val log: Log,
+    internal val logger: Logger,  //koom的Logger
+    internal val log: Log,        //koom的Log
 
     // toolbox
-    internal val loadSoInvoker: (String) -> Unit,
-    internal val executorServiceInvoker: (() -> ExecutorService)?,
+    internal val loadSoInvoker: (String) -> Unit,                 //加载so
+    internal val executorServiceInvoker: (() -> ExecutorService)?,//线程池
 
     // For LooperMonitor
-    internal val loopHandlerInvoker: () -> Handler
+    internal val loopHandlerInvoker: () -> Handler//后台线程handler
 ) {
   class Builder {
     private lateinit var mApplication: Application
@@ -120,15 +120,20 @@ class CommonConfig private constructor(
         debugMode = mDebugMode,
         versionNameInvoker = mVersionNameInvoker,
 
-        rootFileInvoker = mRootFileInvoker ?: {
+        rootFileInvoker = mRootFileInvoker ?: {//默认文件夹
+          //https://blog.csdn.net/Kelaker/article/details/80471352
+          //内部存储：应用文件目录：$applicationDir/files
+          //外部存储：应用文件目录：$applicationDir/files，
+          // 通过Context.getExternalFilesDir(String type)，type为空字符串时获取。
           val rootDir = runCatching { mApplication.getExternalFilesDir("") }.getOrNull()
 
-          File(rootDir ?: mApplication.filesDir, "performance/$it")
+          //rootDir不为null了，则parent为rootDir，否则为mApplication.filesDir
+          File(rootDir ?: mApplication.filesDir, "performance/$it")//这里 todo $it是啥
               .apply { mkdirs() }
         },
 
         sharedPreferencesInvoker = mSharedPreferencesInvoker ?: {
-          mApplication.getSharedPreferences("performance", Context.MODE_PRIVATE)
+          mApplication.getSharedPreferences("performance", Context.MODE_PRIVATE)//默认performance
         },
         sharedPreferencesKeysInvoker = mSharedPreferencesKeysInvoker ?: { it.all.keys },
 
@@ -138,7 +143,8 @@ class CommonConfig private constructor(
         loadSoInvoker = mLoadSoInvoker ?: { System.loadLibrary(it) },
         executorServiceInvoker = mExecutorServiceInvoker,
 
-        loopHandlerInvoker = mLoopHandlerInvoker ?: { LoopThread.LOOP_HANDLER }
+
+        loopHandlerInvoker = mLoopHandlerInvoker ?: { LoopThread.LOOP_HANDLER }//默认LoopThread.LOOP_HANDLER
     )
   }
 }

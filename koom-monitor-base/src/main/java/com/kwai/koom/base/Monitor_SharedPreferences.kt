@@ -20,5 +20,6 @@ package com.kwai.koom.base
 
 import android.content.SharedPreferences
 
+//获取sharedPreferences的所有key
 val SharedPreferences.allKeys: Set<String>
   get() = MonitorManager.commonConfig.sharedPreferencesKeysInvoker(this)

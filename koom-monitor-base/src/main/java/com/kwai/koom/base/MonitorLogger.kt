@@ -20,6 +20,7 @@ package com.kwai.koom.base
 
 import androidx.annotation.IntDef
 
+//收集log，埋点
 object MonitorLogger : Logger {
   override fun addCustomStatEvent(key: String, value: String?, realtimeReport: Boolean) {
     MonitorManager.commonConfig.logger.addCustomStatEvent(key, value, realtimeReport)
