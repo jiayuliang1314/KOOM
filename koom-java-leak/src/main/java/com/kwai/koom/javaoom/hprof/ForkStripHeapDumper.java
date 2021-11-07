@@ -20,29 +20,31 @@ package com.kwai.koom.javaoom.hprof;
 
 import com.kwai.koom.base.MonitorLog;
 
+//ok
 public class ForkStripHeapDumper extends HeapDumper {
-  private static final String TAG = "OOMMonitor_ForkStripHeapDumper";
+    private static final String TAG = "OOMMonitor_ForkStripHeapDumper";
 
-  public ForkStripHeapDumper() {
-    super();
-  }
-
-  @Override
-  public boolean dump(String path) {
-    MonitorLog.e(TAG, "dump " + path);
-    boolean dumpRes;
-    try {
-      StripHprofHeapDumper stripHprofHeapDumper = new StripHprofHeapDumper();
-      stripHprofHeapDumper.initStripDump();
-      stripHprofHeapDumper.hprofName(path);
-
-      ForkJvmHeapDumper forkJvmHeapDumper = new ForkJvmHeapDumper();
-      dumpRes = forkJvmHeapDumper.dump(path);
-      MonitorLog.e(TAG, "dump end");
-    } catch (Exception e) {
-      e.printStackTrace();
-      return false;
+    public ForkStripHeapDumper() {
+        super();
     }
-    return dumpRes;
-  }
+
+    @Override
+    public boolean dump(String path) {
+        MonitorLog.e(TAG, "dump " + path);
+        boolean dumpRes;
+        try {
+            //创建裁剪StripHprofHeapDumper
+            StripHprofHeapDumper stripHprofHeapDumper = new StripHprofHeapDumper();
+            stripHprofHeapDumper.initStripDump();
+            stripHprofHeapDumper.hprofName(path);
+            //创建ForkJvmHeapDumper
+            ForkJvmHeapDumper forkJvmHeapDumper = new ForkJvmHeapDumper();
+            dumpRes = forkJvmHeapDumper.dump(path);
+            MonitorLog.e(TAG, "dump end");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return dumpRes;
+    }
 }

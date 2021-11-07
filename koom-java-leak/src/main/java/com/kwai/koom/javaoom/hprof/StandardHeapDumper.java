@@ -22,6 +22,8 @@ import java.io.IOException;
 
 import android.os.Debug;
 
+//ok
+//直接调用Debug.dumpHprofData
 public class StandardHeapDumper extends HeapDumper {
 
   @Override

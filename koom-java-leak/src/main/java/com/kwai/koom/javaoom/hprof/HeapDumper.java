@@ -20,6 +20,7 @@
 
 package com.kwai.koom.javaoom.hprof;
 
+//NativeHandler dump方法
 public abstract class HeapDumper {
 
   protected final boolean soLoaded;

@@ -35,6 +35,7 @@ public class StripHprofHeapDumper extends HeapDumper {
   public StripHprofHeapDumper() {
     super();
     if (soLoaded) {
+      //step 1
       initStripDump();
     }
   }
@@ -54,8 +55,11 @@ public class StripHprofHeapDumper extends HeapDumper {
 
     boolean dumpRes = false;
     try {
+      //step 2
       hprofName(path);
+      //step 3
       Debug.dumpHprofData(path);
+      //step 4
       dumpRes = isStripSuccess();
     } catch (IOException e) {
       e.printStackTrace();
@@ -64,9 +68,12 @@ public class StripHprofHeapDumper extends HeapDumper {
     return dumpRes;
   }
 
+  //step 1
   public native void initStripDump();
 
+  //step 2
   public native void hprofName(String name);
 
+  //step 4
   public native boolean isStripSuccess();
 }
