@@ -21,6 +21,7 @@ package com.kwai.koom.javaoom.monitor.tracker
 import com.kwai.koom.base.Monitor
 import com.kwai.koom.javaoom.monitor.OOMMonitorConfig
 
+//OOMMonitorConfig todo
 abstract class OOMTracker : Monitor<OOMMonitorConfig>() {
   /**
    * @return true 表示追踪到oom、 false 表示没有追踪到oom

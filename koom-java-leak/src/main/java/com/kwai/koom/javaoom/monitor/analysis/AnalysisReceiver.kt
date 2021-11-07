@@ -23,6 +23,7 @@ package com.kwai.koom.javaoom.monitor.analysis
 import android.os.Bundle
 import android.os.ResultReceiver
 
+//ResultReceiver todo 监听结果
 class AnalysisReceiver : ResultReceiver(null) {
   private var mResultCallBack: ResultCallBack? = null
 

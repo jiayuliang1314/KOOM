@@ -24,39 +24,39 @@ import com.kwai.koom.javaoom.monitor.utils.SizeUnit
 
 class FastHugeMemoryOOMTracker : OOMTracker() {
 
-  companion object {
-    private const val TAG = "OOMMonitor_FastHugeMemoryTracker"
-    private const val REASON_HIGH_WATERMARK = "high_watermark"
-    private const val REASON_HUGE_DELTA = "delta"
-  }
-
-  private var mDumpReason = ""
-
-  override fun track(): Boolean {
-    val javaHeap = SystemInfo.javaHeap
-
-    // 高危阈值直接触发dump分析
-    if (javaHeap.rate > monitorConfig.forceDumpJavaHeapMaxThreshold) {
-      mDumpReason = REASON_HIGH_WATERMARK
-      MonitorLog.i(TAG, "[meet condition] fast huge memory allocated detected, " +
-          "high memory watermark, force dump analysis!")
-      return true
+    companion object {
+        private const val TAG = "OOMMonitor_FastHugeMemoryTracker"
+        private const val REASON_HIGH_WATERMARK = "high_watermark"//高水位
+        private const val REASON_HUGE_DELTA = "delta"//大块内存
     }
 
-    // 高差值直接dump
-    val lastJavaHeap = SystemInfo.lastJavaHeap
-    if (lastJavaHeap.max != 0L && javaHeap.used - lastJavaHeap.used
-        > SizeUnit.KB.toByte(monitorConfig.forceDumpJavaHeapDeltaThreshold)) {
-      mDumpReason = REASON_HUGE_DELTA
-      MonitorLog.i(TAG, "[meet condition] fast huge memory allocated detected, " +
-          "over the delta threshold!")
-      return true
+    private var mDumpReason = ""
+
+    override fun track(): Boolean {
+        val javaHeap = SystemInfo.javaHeap
+
+        // 高危阈值直接触发dump分析
+        if (javaHeap.rate > monitorConfig.forceDumpJavaHeapMaxThreshold) {//大于90%的时候强制dump
+            mDumpReason = REASON_HIGH_WATERMARK
+            MonitorLog.i(TAG, "[meet condition] fast huge memory allocated detected, " +
+                    "high memory watermark, force dump analysis!")
+            return true
+        }
+
+        // 高差值直接dump
+        val lastJavaHeap = SystemInfo.lastJavaHeap
+        if (lastJavaHeap.max != 0L && javaHeap.used - lastJavaHeap.used
+                > SizeUnit.KB.toByte(monitorConfig.forceDumpJavaHeapDeltaThreshold)) {//增加了350M直接dump
+            mDumpReason = REASON_HUGE_DELTA
+            MonitorLog.i(TAG, "[meet condition] fast huge memory allocated detected, " +
+                    "over the delta threshold!")
+            return true
+        }
+
+        return false
     }
 
-    return false
-  }
+    override fun reset() = Unit
 
-  override fun reset() = Unit
-
-  override fun reason() = "reason_fast_huge_$mDumpReason"
+    override fun reason() = "reason_fast_huge_$mDumpReason"
 }

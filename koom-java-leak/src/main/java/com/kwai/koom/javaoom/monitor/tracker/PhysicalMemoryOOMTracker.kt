@@ -21,6 +21,7 @@ package com.kwai.koom.javaoom.monitor.tracker
 import com.kwai.koom.base.MonitorLog
 import com.kwai.koom.javaoom.monitor.tracker.model.SystemInfo
 
+//看着没啥用
 class PhysicalMemoryOOMTracker : OOMTracker() {
 
   companion object {
@@ -30,6 +31,7 @@ class PhysicalMemoryOOMTracker : OOMTracker() {
   override fun track(): Boolean {
     val info = SystemInfo.memInfo
     when {
+      //0.05
       info.rate < monitorConfig.deviceMemoryThreshold -> {
         MonitorLog.e(TAG, "oom meminfo.rate < " +
             "${monitorConfig.deviceMemoryThreshold * 100}%")

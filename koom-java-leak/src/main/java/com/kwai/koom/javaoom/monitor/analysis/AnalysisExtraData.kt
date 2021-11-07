@@ -20,10 +20,11 @@
 
 package com.kwai.koom.javaoom.monitor.analysis
 
+//ok
 class AnalysisExtraData {
-  var reason: String? = null
+  var reason: String? = null        //reason原因
 
-  var usageSeconds: String? = null
+  var usageSeconds: String? = null  //时间
 
-  var currentPage: String? = null
+  var currentPage: String? = null   //当前页面
 }

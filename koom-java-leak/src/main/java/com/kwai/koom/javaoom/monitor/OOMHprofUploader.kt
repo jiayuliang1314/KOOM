@@ -20,6 +20,7 @@ package com.kwai.koom.javaoom.monitor
 
 import java.io.File
 
+//ok
 interface OOMHprofUploader {
 
   enum class HprofType {

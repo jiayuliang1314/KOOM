@@ -23,42 +23,47 @@ import com.kwai.koom.javaoom.monitor.tracker.model.SystemInfo
 import com.kwai.koom.javaoom.monitor.utils.SizeUnit
 
 class HeapOOMTracker : OOMTracker() {
-  companion object {
-    private const val TAG = "OOMMonitor_HeapOOMTracker"
+    companion object {
+        private const val TAG = "OOMMonitor_HeapOOMTracker"
 
-    private const val HEAP_RATIO_THRESHOLD_GAP = 0.05f
-  }
-
-  private var mLastHeapRatio = 0.0f
-  private var mOverThresholdCount = 0
-
-  override fun track(): Boolean {
-    val heapRatio = SystemInfo.javaHeap.rate
-
-    if (heapRatio > monitorConfig.heapThreshold
-        && heapRatio >= mLastHeapRatio - HEAP_RATIO_THRESHOLD_GAP) {
-
-      mOverThresholdCount++
-
-      MonitorLog.i(TAG,
-          "[meet condition] "
-              + "overThresholdCount: $mOverThresholdCount"
-              + ", heapRatio: $heapRatio"
-              + ", usedMem: ${SizeUnit.BYTE.toMB(SystemInfo.javaHeap.used)}mb"
-              + ", max: ${SizeUnit.BYTE.toMB(SystemInfo.javaHeap.max)}mb")
-    } else {
-      reset()
+        private const val HEAP_RATIO_THRESHOLD_GAP = 0.05f
     }
 
-    mLastHeapRatio = heapRatio
+    private var mLastHeapRatio = 0.0f
+    private var mOverThresholdCount = 0
 
-    return mOverThresholdCount >= monitorConfig.maxOverThresholdCount
-  }
+    override fun track(): Boolean {
+        val heapRatio = SystemInfo.javaHeap.rate
 
-  override fun reset() {
-    mLastHeapRatio = 0.0f
-    mOverThresholdCount = 0
-  }
+        //heapThreshold
+        //     maxMem >= 512 - 10 -> 0.8f
+        //     maxMem >= 256 - 10 -> 0.85f
+        //     else -> 0.9f
+        //处于高位，并且一直处于高位降的不明显
+        if (heapRatio > monitorConfig.heapThreshold
+                && heapRatio >= mLastHeapRatio - HEAP_RATIO_THRESHOLD_GAP) {
 
-  override fun reason() = "reason_heap_oom"
+            mOverThresholdCount++
+
+            MonitorLog.i(TAG,
+                    "[meet condition] "
+                            + "overThresholdCount: $mOverThresholdCount"
+                            + ", heapRatio: $heapRatio"
+                            + ", usedMem: ${SizeUnit.BYTE.toMB(SystemInfo.javaHeap.used)}mb"
+                            + ", max: ${SizeUnit.BYTE.toMB(SystemInfo.javaHeap.max)}mb")
+        } else {
+            reset()
+        }
+
+        mLastHeapRatio = heapRatio
+
+        return mOverThresholdCount >= monitorConfig.maxOverThresholdCount
+    }
+
+    override fun reset() {
+        mLastHeapRatio = 0.0f
+        mOverThresholdCount = 0
+    }
+
+    override fun reason() = "reason_heap_oom"
 }

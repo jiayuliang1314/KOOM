@@ -120,7 +120,7 @@ class CommonConfig private constructor(
         debugMode = mDebugMode,
         versionNameInvoker = mVersionNameInvoker,
 
-        rootFileInvoker = mRootFileInvoker ?: {//默认文件夹
+        rootFileInvoker = mRootFileInvoker ?: {//默认文件夹，如果mRootFileInvoker为空的画，这里有个默认的(String) -> File
           //https://blog.csdn.net/Kelaker/article/details/80471352
           //内部存储：应用文件目录：$applicationDir/files
           //外部存储：应用文件目录：$applicationDir/files，
@@ -128,7 +128,7 @@ class CommonConfig private constructor(
           val rootDir = runCatching { mApplication.getExternalFilesDir("") }.getOrNull()
 
           //rootDir不为null了，则parent为rootDir，否则为mApplication.filesDir
-          File(rootDir ?: mApplication.filesDir, "performance/$it")//这里 todo $it是啥
+          File(rootDir ?: mApplication.filesDir, "performance/$it")//这里 $it是啥，是一个string
               .apply { mkdirs() }
         },
 

@@ -27,6 +27,7 @@ import com.kwai.koom.javaoom.hprof.StripHprofHeapDumper
 import com.kwai.koom.javaoom.monitor.utils.SizeUnit
 import java.util.*
 
+//dump有四种，simple + fork + strip + forkstrip
 object OOMHeapDumper {
   private const val TAG = "OOMHeapDumper"
 

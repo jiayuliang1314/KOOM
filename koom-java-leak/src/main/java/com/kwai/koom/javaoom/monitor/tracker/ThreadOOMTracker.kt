@@ -18,79 +18,87 @@
 
 package com.kwai.koom.javaoom.monitor.tracker
 
+import android.os.Build
+import com.kwai.koom.base.MonitorBuildConfig
 import com.kwai.koom.base.MonitorLog
-import com.kwai.koom.base.MonitorManager.getApplication
-import com.kwai.koom.base.currentActivity
 import com.kwai.koom.javaoom.monitor.OOMFileManager
 import com.kwai.koom.javaoom.monitor.tracker.model.SystemInfo
 import java.io.File
 
 class ThreadOOMTracker : OOMTracker() {
-  companion object {
-    private const val TAG = "OOMMonitor_ThreadOOMTracker"
+    companion object {
+        private const val TAG = "OOMMonitor_ThreadOOMTracker"
 
-    private const val THREAD_COUNT_THRESHOLD_GAP = 50 //Thread连续值递增浮动范围50
-  }
-
-  private var mLastThreadCount = 0
-  private var mOverThresholdCount = 0
-
-  override fun track(): Boolean {
-    val threadCount = getThreadCount()
-
-    if (threadCount > monitorConfig.threadThreshold
-        && threadCount >= mLastThreadCount - THREAD_COUNT_THRESHOLD_GAP) {
-      mOverThresholdCount++
-
-      MonitorLog.i(TAG,
-          "[meet condition] "
-              + "overThresholdCount:$mOverThresholdCount"
-              + ", threadCount: $threadCount")
-
-      dumpThreadIfNeed()
-    } else {
-      reset()
+        private const val THREAD_COUNT_THRESHOLD_GAP = 50 //Thread连续值递增浮动范围50
     }
 
-    mLastThreadCount = threadCount
+    private var mLastThreadCount = 0
+    private var mOverThresholdCount = 0
 
-    return mOverThresholdCount >= monitorConfig.maxOverThresholdCount
-  }
+    override fun track(): Boolean {
+        val threadCount = getThreadCount()
+      //华为的EMUI 小于O版本的，阈值450，
+//      if (MonitorBuildConfig.ROM == "EMUI" && Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+//        450
+//      } else {
+//        750
+//      }
+      //大于阈值，并且下降不明显，处于高位
+        if (threadCount > monitorConfig.threadThreshold
+                && threadCount >= mLastThreadCount - THREAD_COUNT_THRESHOLD_GAP) {
+            mOverThresholdCount++
 
-  override fun reset() {
-    mLastThreadCount = 0
-    mOverThresholdCount = 0
-  }
+            MonitorLog.i(TAG,
+                    "[meet condition] "
+                            + "overThresholdCount:$mOverThresholdCount"
+                            + ", threadCount: $threadCount")
 
-  override fun reason() = "reason_thread_oom"
-
-  private fun getThreadCount(): Int {
-    return SystemInfo.procStatus.thread
-  }
-
-  private fun dumpThreadIfNeed() {
-    MonitorLog.i(TAG, "over threshold dumpThreadIfNeed")
-
-    if (mOverThresholdCount > monitorConfig.maxOverThresholdCount) return
-
-    val threadNames = runCatching { File("/proc/self/task").listFiles() }
-        .getOrElse {
-          MonitorLog.i(TAG, "/proc/self/task child files is empty")
-
-          return@getOrElse emptyArray()
+            dumpThreadIfNeed()
+        } else {
+            reset()
         }
-        ?.map {
-          runCatching { File(it, "comm").readText() }.getOrElse { "failed to read $it/comm" } }
-        ?.map {
-          if (it.endsWith("\n")) it.substring(0, it.length - 1) else it
-        }
-        ?: emptyList()
 
-    MonitorLog.i(TAG, "threadNames = $threadNames")
+        mLastThreadCount = threadCount
 
-    OOMFileManager.createDumpFile(OOMFileManager.threadDumpDir)
-        .run {
-          runCatching { writeText(threadNames.joinToString(separator = ",")) }
-        }
-  }
+        return mOverThresholdCount >= monitorConfig.maxOverThresholdCount
+    }
+
+    override fun reset() {
+        mLastThreadCount = 0
+        mOverThresholdCount = 0
+    }
+
+    override fun reason() = "reason_thread_oom"
+
+    private fun getThreadCount(): Int {
+        return SystemInfo.procStatus.thread
+    }
+
+  //打印线程名
+    private fun dumpThreadIfNeed() {
+        MonitorLog.i(TAG, "over threshold dumpThreadIfNeed")
+
+        if (mOverThresholdCount > monitorConfig.maxOverThresholdCount) return
+
+        val threadNames = runCatching { File("/proc/self/task").listFiles() }
+                .getOrElse {
+                    MonitorLog.i(TAG, "/proc/self/task child files is empty")
+
+                    return@getOrElse emptyArray()
+                }
+                ?.map {
+                    runCatching { File(it, "comm").readText() }.getOrElse { "failed to read $it/comm" }
+                }
+                ?.map {
+                    if (it.endsWith("\n")) it.substring(0, it.length - 1) else it
+                }
+                ?: emptyList()
+
+        MonitorLog.i(TAG, "threadNames = $threadNames")
+
+        OOMFileManager.createDumpFile(OOMFileManager.threadDumpDir)
+                .run {
+                    runCatching { writeText(threadNames.joinToString(separator = ",")) }
+                }
+    }
 }
