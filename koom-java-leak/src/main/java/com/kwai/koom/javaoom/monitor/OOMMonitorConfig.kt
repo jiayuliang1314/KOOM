@@ -30,10 +30,10 @@ class OOMMonitorConfig(
         val heapThreshold: Float,         //heap阈值
         val fdThreshold: Int,             //fd阈值
         val threadThreshold: Int,         //线程阈值
-        val deviceMemoryThreshold: Float, //device memory阈值 还剩多少容量？ todo
-        val maxOverThresholdCount: Int,   //超过最大次数阈值 3次 todo
-        val forceDumpJavaHeapMaxThreshold: Float,//强制dump java heap最大阈值 0.9大于等于heapThreshold todo
-        val forceDumpJavaHeapDeltaThreshold: Int,//强制dump java heap delta阈值 Delta 三角洲 意思是增量 todo
+        val deviceMemoryThreshold: Float, //device memory阈值 还剩多少容量？ 0.05但是没用到
+        val maxOverThresholdCount: Int,   //超过最大次数阈值 3次 ，处于较高水平，不下降，下降太慢
+        val forceDumpJavaHeapMaxThreshold: Float,//强制dump java heap最大阈值 0.9大于等于heapThreshold
+        val forceDumpJavaHeapDeltaThreshold: Int,//强制dump java heap delta阈值 Delta 三角洲 意思是增量
 
         val loopInterval: Long, //轮询间隔
 
@@ -67,11 +67,11 @@ class OOMMonitorConfig(
         private var mAnalysisPeriodPerVersion = 15 * 24 * 60 * 60 * 1000    //每个版本的前15天才分析，超过这个时间段不再dump
 
         private var mHeapThreshold: Float? = null
-        private var mVssSizeThreshold = 3_650_000 //Only for 32 bit cpu devices. 360M todo 有用到吗
+        private var mVssSizeThreshold = 3_650_000 //Only for 32 bit cpu devices. 360M  有用到吗，好像没用到
         private var mFdThreshold = 1000             //fd阈值1000
         private var mThreadThreshold: Int? = null   //线程阈值
-        private var mDeviceMemoryThreshold: Float = 0.05f//todo
-        private var mForceDumpJavaHeapMaxThreshold = 0.90f//达到javaheap的90%的时候强制dump todo
+        private var mDeviceMemoryThreshold: Float = 0.05f//收集memory
+        private var mForceDumpJavaHeapMaxThreshold = 0.90f//达到javaheap的90%的时候强制dump
         private var mForceDumpJavaHeapDeltaThreshold = 350_000 //java heap rise 350m in a very short time.短时间增量350M的时候
         private var mMaxOverThresholdCount = 3//超过3次
         private var mLoopInterval = 15_000L //15s轮询一次

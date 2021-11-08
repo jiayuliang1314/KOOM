@@ -73,16 +73,16 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
         //NativeAllocationRegistry todo 干哈的
         private const val NATIVE_ALLOCATION_CLASS_NAME = "libcore.util.NativeAllocationRegistry"
 
-        //todo 干哈的
+        //CleanerThunk todo 干哈的
         private const val NATIVE_ALLOCATION_CLEANER_THUNK_CLASS_NAME = "libcore.util.NativeAllocationRegistry\$CleanerThunk"
 
         private const val FINISHED_FIELD_NAME = "mFinished"
         private const val DESTROYED_FIELD_NAME = "mDestroyed"
 
-        //todo 干哈的
+        //用于判断fragment是否泄漏
         private const val FRAGMENT_MANAGER_FIELD_NAME = "mFragmentManager"
 
-        //todo 干哈的
+        //用于判断fragment是否泄漏
         private const val FRAGMENT_MCALLED_FIELD_NAME = "mCalled"
 
         private const val DEFAULT_BIG_PRIMITIVE_ARRAY = 256 * 1024//256kb？ 基本数据类型数组 todo
@@ -589,7 +589,7 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
                 leakTraceChainModel.path.add(leakPathItem)
             }
 
-            // 添加本身trace path，todo，leakTraceObject他自身是在referencePath的最后一个吧，这里多加了一遍
+            // 添加本身trace path，leakTraceObject他自身不在referencePath，这里加上
             leakTraceChainModel.path.add(HeapReport.GCPath.PathItem().apply {
                 reference = leakTraceObject.className
                 referenceType = leakTraceObject.typeName
@@ -654,7 +654,7 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
                 reference = leakTraceObject.className
                 referenceType = leakTraceObject.typeName
             })
-            break //todo这里为啥break了
+            break //todo这里为啥break了，不重要？？？
         }
         MonitorLog.i(OOM_ANALYSIS_TAG,
                 "=======================================================================")

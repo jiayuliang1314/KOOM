@@ -51,10 +51,10 @@ object OOMMonitor : LoopMonitor<OOMMonitorConfig>(), LifecycleEventObserver {
     private var mForegroundPendingRunnables = mutableListOf<Runnable>()//前台才执行startAnalysisService
 
     @Volatile
-    private var mIsLoopStarted = false//todo
+    private var mIsLoopStarted = false// 这里为什么mIsLoopPendingStart，startLoop要手动调用？？看文档是需要手动调用
 
     @Volatile
-    private var mIsLoopPendingStart = false//todo 这里为什么mIsLoopPendingStart，startLoop要手动调用？？
+    private var mIsLoopPendingStart = false// 这里为什么mIsLoopPendingStart，startLoop要手动调用？？看文档是需要手动调用
 
     @Volatile
     private var mHasDumped = false // 每次启动周期里只dump一次 Only trigger one time in process running lifecycle.
@@ -81,7 +81,7 @@ object OOMMonitor : LoopMonitor<OOMMonitorConfig>(), LifecycleEventObserver {
     }
     //endregion
 
-    //region step 2 startLoop todo 要手动启动吗
+    //region step 2 startLoop startLoop要手动调用？？看文档是需要手动调用
     override fun startLoop(clearQueue: Boolean, postAtFront: Boolean, delayMillis: Long) {
         throwIfNotInitialized { return }
 
@@ -334,7 +334,7 @@ object OOMMonitor : LoopMonitor<OOMMonitorConfig>(), LifecycleEventObserver {
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_START -> {
-                //todo 这里为什么mIsLoopPendingStart，startLoop要手动调用？？
+                //这里为什么mIsLoopPendingStart，startLoop要手动调用？？看文档是需要手动调用
                 if (!mHasDumped && mIsLoopPendingStart) {
                     MonitorLog.i(TAG, "foreground")
                     startLoop()

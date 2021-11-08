@@ -72,14 +72,14 @@ public class ForkJvmHeapDumper extends HeapDumper {
         try {
             MonitorLog.i(TAG, "before suspend and fork.");
             //step 2
-            int pid = suspendAndFork();//todo pid是啥意思
+            int pid = suspendAndFork();//pid是啥意思，开辟的子进程，pid为0，将去dump
             if (pid == 0) {
                 // Child process
                 Debug.dumpHprofData(path);
                 exitProcess();//step 3
-            } else if (pid > 0) {
+            } else if (pid > 0) {//主进程将会resumeAndWait
                 // Parent process
-                dumpRes = resumeAndWait(pid);//todo
+                dumpRes = resumeAndWait(pid);
                 MonitorLog.i(TAG, "notify from pid " + pid);
             }
         } catch (IOException e) {
