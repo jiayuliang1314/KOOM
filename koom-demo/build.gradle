@@ -4,6 +4,11 @@ plugins {
 apply from: rootProject.file('gradle/common.gradle')
 
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.kwai.koom.demo"
         versionCode 1

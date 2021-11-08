@@ -25,7 +25,7 @@ import com.kwai.koom.javaoom.monitor.utils.SizeUnit
 
 class OOMMonitorConfig(
         val analysisMaxTimesPerVersion: Int,  //每个版本最多分析次数
-        val analysisPeriodPerVersion: Int,    //每个版本分析时间间隔
+        val analysisPeriodPerVersion: Int,    //每个版本的前15天才分析，超过这个时间段不再dump
 
         val heapThreshold: Float,         //heap阈值
         val fdThreshold: Int,             //fd阈值
@@ -64,7 +64,7 @@ class OOMMonitorConfig(
         }
 
         private var mAnalysisMaxTimesPerVersion = 5                         //每个版本最多分析5次
-        private var mAnalysisPeriodPerVersion = 15 * 24 * 60 * 60 * 1000    //每次分析时间间隔15天
+        private var mAnalysisPeriodPerVersion = 15 * 24 * 60 * 60 * 1000    //每个版本的前15天才分析，超过这个时间段不再dump
 
         private var mHeapThreshold: Float? = null
         private var mVssSizeThreshold = 3_650_000 //Only for 32 bit cpu devices. 360M todo 有用到吗

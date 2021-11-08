@@ -27,8 +27,11 @@ public class HeapReport {
 
     public RunningInfo runningInfo = new RunningInfo();
     public List<GCPath> gcPaths = new ArrayList<>();//引用链gc path of suspected objects
-    public List<ClassInfo> classInfos = new ArrayList<>();//类及其实例数量Class's instances count list
-    public List<LeakObject> leakObjects = new ArrayList<>();//泄漏的对象
+    //类及其实例数量Class's instances count list，
+    // 这里只关注了activity,fragment，bitmap，Window，NativeAllocationRegistry，CleanerThunk
+    //参考HeapAnalysisService
+    public List<ClassInfo> classInfos = new ArrayList<>();
+    public List<LeakObject> leakObjects = new ArrayList<>();//泄漏的大对象，bitmap，基本数据类型的数组，加入大对象泄露json
     public Boolean analysisDone;//flag to record whether hprof is analyzed already.
     public Integer reAnalysisTimes;//flag to record hprof reanalysis times.
 
@@ -80,7 +83,7 @@ public class HeapReport {
      * GC Path means path of object to GC Root, it can also be called as reference chain.
      */
     public static class GCPath {
-        public Integer instanceCount;//todo instances number of same path to gc root
+        public Integer instanceCount;//引用链上有多少对象 instances number of same path to gc root
         public String leakReason;//reason of why instance is suspected
         public String gcRoot;
         public String signature;//signature are computed by the sha1 of reference chain
@@ -101,7 +104,7 @@ public class HeapReport {
     public static class ClassInfo {
         public String className;
         public String instanceCount;//类的实例数量All instances's count of this class.
-        public String leakInstanceCount;//All leaked instances's count of this class.
+        public String leakInstanceCount;//no use 没用到 All leaked instances's count of this class.
     }
 
     public static class LeakObject {
