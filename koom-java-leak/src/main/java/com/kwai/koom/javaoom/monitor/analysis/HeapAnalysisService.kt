@@ -334,8 +334,12 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
             }
 
             //使用HashMap缓存及遍历两边classHierarchy，这2种方式加速查找instance是否是对应类实例
-            //superId1代表类的继承层次中倒数第一的id，0就是继承自object
-            //superId4代表类的继承层次中倒数第四的id
+            //superId1代表类的继承层次中倒数第二的id，0就是继承自object
+            //superId4代表类的继承层次中倒数第五的id
+            //对于activity，superId1代表Context，superId4代表ContextThemeWrapper，参考以下代码
+            //        //Activity->ContextThemeWrapper->ContextWrapper->Context->Object
+            //        private const val ACTIVITY_CLASS_NAME = "android.app.Activity"
+            //其他像fragment，bitmap，window都是继承自object，superId1代表fragment，bitmap，window
             //类的继承关系，以AOSP代码为主，部分厂商入如OPPO Bitmap会做一些修改，这里先忽略
             val instanceClassId = instance.instanceClassId
             val (superId1, superId4) = if (classHierarchyMap[instanceClassId] != null) {
@@ -347,7 +351,7 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
                 //first除了object下一个
                 val first = classHierarchyList.getOrNull(classHierarchyList.size - 2)?.objectId
                         ?: 0L
-                //对于activity，ContextThemeWrapper，参考以下代码
+                //对于activity，activity，参考以下代码
                 //        //Activity->ContextThemeWrapper->ContextWrapper->Context->Object
                 //        private const val ACTIVITY_CLASS_NAME = "android.app.Activity"
                 //其他像fragment，bitmap，window都是继承自object
@@ -357,6 +361,12 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
                 Pair(first, second).also { classHierarchyMap[instanceClassId] = it }
             }
 
+            //superId1代表类的继承层次中倒数第二的id，0就是继承自object
+            //superId4代表类的继承层次中倒数第五的id
+            //对于activity，superId1代表Context，superId4代表ContextThemeWrapper，参考以下代码
+            //        //Activity->ContextThemeWrapper->ContextWrapper->Context->Object
+            //        private const val ACTIVITY_CLASS_NAME = "android.app.Activity"
+            //其他像fragment，bitmap，window都是继承自object，superId1代表fragment，bitmap，window
             //Activity
             if (activityHeapClass?.objectId == superId4) {
                 //找到两个field的值
@@ -402,7 +412,7 @@ class HeapAnalysisService : IntentService("HeapAnalysisService") {
                 continue
             }
 
-            //Bitmap
+            //Bitmap，如果这个是bitmap的话，bitmapHeapClass?.objectId这个是bitmapHeapClass的类的id
             if (bitmapHeapClass?.objectId == superId1) {
                 val fieldWidth = instance[BITMAP_CLASS_NAME, "mWidth"]
                 val fieldHeight = instance[BITMAP_CLASS_NAME, "mHeight"]

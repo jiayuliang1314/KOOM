@@ -71,7 +71,7 @@ public class HeapReport {
         public String deviceMemAvaliable; //device可用内存
 
         public String dumpReason;//heap dump trigger reason,dump原因
-        public String analysisReason;//analysis trigger reason，分析原因
+        public String analysisReason;//没有用到，analysis trigger reason，分析原因
 
         //KOOM Perf data
         public String koomVersion;
