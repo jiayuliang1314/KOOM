@@ -49,7 +49,7 @@ public class ForkJvmHeapDumper extends HeapDumper {
     public ForkJvmHeapDumper() {
         super();
         if (soLoaded) {
-          //step 1
+            //topic 如何开辟子进程dump的 step2
             init();
         }
     }
@@ -71,15 +71,15 @@ public class ForkJvmHeapDumper extends HeapDumper {
         boolean dumpRes = false;
         try {
             MonitorLog.i(TAG, "before suspend and fork.");
-            //step 2
+            //topic 如何开辟子进程dump的 step3-1
             int pid = suspendAndFork();//pid是啥意思，开辟的子进程，pid为0，将去dump
             if (pid == 0) {
                 // Child process
                 Debug.dumpHprofData(path);
-                exitProcess();//step 3
+                exitProcess();//topic 如何开辟子进程dump的 step3-2
             } else if (pid > 0) {//主进程将会resumeAndWait
                 // Parent process
-                dumpRes = resumeAndWait(pid);
+                dumpRes = resumeAndWait(pid);//topic 如何开辟子进程dump的 step3-3
                 MonitorLog.i(TAG, "notify from pid " + pid);
             }
         } catch (IOException e) {
@@ -90,7 +90,7 @@ public class ForkJvmHeapDumper extends HeapDumper {
     }
 
     /**
-     * Init before do dump. step 1
+     * Init before do dump. //topic 如何开辟子进程dump的 step2
      */
     private native void init();
 
@@ -99,17 +99,17 @@ public class ForkJvmHeapDumper extends HeapDumper {
      *
      * @return return value of fork
      */
-    private native int suspendAndFork();//todo 返回 //step 2
+    private native int suspendAndFork();//topic 如何开辟子进程dump的 step3-1
 
     /**
      * Resume the whole ART, and then wait child process to notify.
      *
      * @param pid pid of child process.
      */
-    private native boolean resumeAndWait(int pid);//todo
+    private native boolean resumeAndWait(int pid);//topic 如何开辟子进程dump的 step3-3
 
     /**
      * Exit current process.
      */
-    private native void exitProcess();//step 3
+    private native void exitProcess();//topic 如何开辟子进程dump的 step3-2
 }

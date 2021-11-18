@@ -258,7 +258,7 @@ object OOMMonitor : LoopMonitor<OOMMonitorConfig>(), LifecycleEventObserver {
             }
 
             MonitorLog.i(TAG, "hprof analysis dir:$hprofAnalysisDir")
-
+            //topic 如何开辟子进程dump的 step1
             ForkJvmHeapDumper().run {
                 dump(hprofFile.absolutePath)//开辟子进程dump
             }

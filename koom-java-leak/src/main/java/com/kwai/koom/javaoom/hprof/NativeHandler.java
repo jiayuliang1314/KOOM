@@ -23,7 +23,7 @@ package com.kwai.koom.javaoom.hprof;
 
 import static com.kwai.koom.base.Monitor_SoKt.loadSoQuietly;
 
-//loadSoQuietly todo ok
+//loadSoQuietly ok
 public class NativeHandler {
   private static boolean sSoLoaded;
 
