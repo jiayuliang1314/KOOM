@@ -72,7 +72,7 @@ public class ForkJvmHeapDumper extends HeapDumper {
         try {
             MonitorLog.i(TAG, "before suspend and fork.");
             //topic 如何开辟子进程dump的 step3-1
-            int pid = suspendAndFork();//pid是啥意思，开辟的子进程，pid为0，将去dump
+            int pid = suspendAndFork();//pid是开辟的子进程，pid为0，将去dump
             if (pid == 0) {
                 // Child process
                 Debug.dumpHprofData(path);
