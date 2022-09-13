@@ -12,28 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * <p>
+ * Hprof dumper
  *
  * @author Rui Li <lirui05@kuaishou.com>
  */
 
-package com.kwai.koom.javaoom.hprof;
+package com.kwai.koom.fastdump;
 
-import java.io.IOException;
-
-import android.os.Debug;
-
-//ok
-//直接调用Debug.dumpHprofData
-public class StandardHeapDumper extends HeapDumper {
-
-  @Override
-  public boolean dump(String path) {
-    try {
-      Debug.dumpHprofData(path);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return false;
-    }
-    return true;
-  }
+public interface HeapDumper {
+  /**
+   * dump may cost several seconds, make sure called in a separated thread.
+   *
+   * @param path dump file
+   * @return dump result success or not
+   */
+  boolean dump(String path);
 }

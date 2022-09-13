@@ -22,6 +22,7 @@ import android.os.Build
 
 //ok
 object MonitorBuildConfig {
+
   @JvmStatic
   val DEBUG by lazy { MonitorManager.commonConfig.debugMode }
 
