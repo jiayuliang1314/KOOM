@@ -55,54 +55,6 @@ Java_com_kwai_koom_javaoom_hprof_ForkStripHeapDumper_hprofName(
   env->ReleaseStringUTFChars(name, hprofName);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_com_kwai_koom_javaoom_hprof_StripHprofHeapDumper_isStripSuccess(
-    JNIEnv *env ATTRIBUTE_UNUSED, jobject jobject ATTRIBUTE_UNUSED) {
-  return (jboolean)HprofStrip::GetInstance().IsHookSuccess();
-}
-
-/**
- * JNI bridge for hprof dump
- */
-JNIEXPORT void JNICALL Java_com_kwai_koom_javaoom_hprof_ForkJvmHeapDumper_init(
-    JNIEnv *env ATTRIBUTE_UNUSED, jobject jobject ATTRIBUTE_UNUSED) {
-  HprofDump::GetInstance().Initialize();
-}
-
-JNIEXPORT jint JNICALL
-Java_com_kwai_koom_javaoom_hprof_ForkJvmHeapDumper_suspendAndFork(
-    JNIEnv *env ATTRIBUTE_UNUSED, jobject jobject ATTRIBUTE_UNUSED) {
-  return HprofDump::GetInstance().SuspendAndFork();
-}
-
-JNIEXPORT void JNICALL
-Java_com_kwai_koom_javaoom_hprof_ForkJvmHeapDumper_exitProcess(
-    JNIEnv *env ATTRIBUTE_UNUSED, jobject jobject ATTRIBUTE_UNUSED) {
-  ALOGI("process %d will exit!", getpid());
-  _exit(0);
-}
-
-JNIEXPORT jboolean JNICALL
-Java_com_kwai_koom_javaoom_hprof_ForkJvmHeapDumper_resumeAndWait(
-    JNIEnv *env ATTRIBUTE_UNUSED, jobject jobject ATTRIBUTE_UNUSED, jint pid) {
-  return HprofDump::GetInstance().ResumeAndWait(pid);
-}
-
-/**
- * JNI bridge for native handler
- */
-JNIEXPORT jboolean JNICALL
-Java_com_kwai_koom_javaoom_hprof_NativeHandler_isARM64(
-    JNIEnv *env ATTRIBUTE_UNUSED, jclass clazz ATTRIBUTE_UNUSED) {
-#if defined(__aarch64__) || defined(__x86_64__)
-  return JNI_TRUE;
-#elif defined(__arm__) || defined(__i386__)
-  return JNI_FALSE;
-#else
-#error unsupported architecture
-#endif
-}
-
 #ifdef __cplusplus
 }
 #endif
